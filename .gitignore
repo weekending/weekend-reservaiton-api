@@ -26,3 +26,7 @@ target/
 # Env Value File
 .env*
 !.env.example
+
+# Log Files
+logs/
+*.log

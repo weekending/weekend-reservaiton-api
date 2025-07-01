@@ -28,3 +28,10 @@ $> cargo build
 ```sh
 $> cargo run
 ```
+
+## 1.4 도커로 실행
+
+```sh
+$> docker build -t axum-app .
+$> docker run -p "8000:8000" --env-file ./.env axum-app
+```
