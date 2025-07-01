@@ -2,7 +2,7 @@ use axum::{Json, extract::{Query, State}};
 use sea_orm::DatabaseConnection;
 use serde::Deserialize;
 
-use crate::core::{code::ApiCode, error::ApiError, response::ApiResponse};
+use crate::core::{error::ApiError, http::{Http2xx, Http4xx}, response::ApiResponse};
 use crate::entity::reservation::Model;
 use crate::repository::reservation::{
     find_reservations_by_event,
@@ -28,20 +28,20 @@ pub async fn get_reservations(
 ) -> ApiResponse<Vec<Model>> {
     let reservations = find_reservations_by_event(&db, data.event_id)
         .await;
-    ApiResponse::with_status(ApiCode::Ok, reservations)
+    ApiResponse::new(Http2xx::Ok, reservations)
 }
 
 pub async fn create_reservation(
     State(db): State<DatabaseConnection>,
     Json(data): Json<RequestReservation>,
-) -> Result<ApiResponse<Model>, ApiError> {
+) -> Result<ApiResponse<Model>, ApiError<Http4xx>> {
     if let Some(_) = find_reservations_by_event_and_username_and_phone(
         &db, data.event_id, &data.username, &data.phone
     ).await
     {
-        return Err(ApiError::new(ApiCode::AlreadyReserved));
+        return Err(ApiError::new(Http4xx::AlreadyReserved));
     }
     let reservation = save_reservation(&db, data.event_id, data.username, data.phone)
         .await;
-    Ok(ApiResponse::with_status(ApiCode::Created, reservation))
+    Ok(ApiResponse::new(Http2xx::Created, reservation))
 }
