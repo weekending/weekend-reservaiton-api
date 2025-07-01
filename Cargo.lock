@@ -2910,6 +2910,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "tower-http",
+ "tower-layer",
  "tracing",
  "tracing-appender",
  "tracing-subscriber",
